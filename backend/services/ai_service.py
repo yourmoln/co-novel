@@ -4,7 +4,8 @@ from openai import OpenAI
 
 # 初始化OpenAI客户端
 client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
+    api_key=os.getenv("OPENAI_API_KEY"),
+    base_url=os.getenv("OPENAI_BASE_URL")
 )
 
 class AIService:
@@ -26,7 +27,7 @@ class AIService:
         """
         try:
             response = self.client.completions.create(
-                model="text-davinci-003",
+                model=os.getenv("OPENAI_MODEL", "text-davinci-003"),
                 prompt=prompt,
                 max_tokens=max_tokens,
                 temperature=0.7
