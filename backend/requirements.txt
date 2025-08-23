@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-dotenv
+sqlalchemy
+python-jose
+passlib
+bcrypt
+pydantic
+openai
