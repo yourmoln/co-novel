@@ -2,6 +2,10 @@
 import os
 from openai import OpenAI
 
+# 确保环境变量已加载
+from dotenv import load_dotenv
+load_dotenv()
+
 # 初始化OpenAI客户端
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
