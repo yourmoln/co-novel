@@ -44,13 +44,19 @@
           <span>AI生成结果</span>
         </div>
       </template>
-      <el-alert
-        v-if="aiResult"
-        :title="aiResult.title"
-        :description="aiResult.content"
+      <div v-if="isStreaming" class="streaming-content">
+        <div class="streaming-text">{{ streamingContent }}</div>
+      </div>
+      <div v-else-if="aiResult" class="streaming-content">
+        <div class="streaming-text">{{ aiResult?.content }}</div>
+      </div>
+      <!-- <el-alert
+        v-else-if="aiResult"
+        :title="aiResult?.title || ''"
+        :description="aiResult?.content || ''"
         type="success"
         show-icon
-      ></el-alert>
+      ></el-alert> -->
       <div v-else class="empty-result">
         <p>点击按钮生成内容</p>
       </div>
@@ -59,9 +65,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
 
 export default defineComponent({
   name: 'Create',
@@ -72,12 +77,12 @@ export default defineComponent({
       content: ''
     })
     
-    const aiResult = ref<{
-      title: string;
-      content: string;
-    } | null>(null)
+    const aiResult = ref<any>(null)
     
     const loading = ref(false)
+    const streamingContent = ref('')
+    const isStreaming = ref(false)
+    const abortController = ref<AbortController | null>(null)
     
     // 配置API基础URL
     const API_BASE_URL = 'http://localhost:8000/api/ai'
@@ -90,12 +95,24 @@ export default defineComponent({
       
       loading.value = true
       try {
-        const response = await axios.post(`${API_BASE_URL}/generate-title`, {
-          genre: novelForm.value.genre,
-          theme: novelForm.value.theme
+        const response = await fetch(`${API_BASE_URL}/generate-title`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            genre: novelForm.value.genre,
+            theme: novelForm.value.theme
+          })
         })
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const data = await response.json()
         aiResult.value = {
-          title: response.data.title,
+          title: data.title,
           content: '点击"生成内容"按钮生成小说内容'
         }
         ElMessage.success('标题生成成功')
@@ -114,21 +131,78 @@ export default defineComponent({
       }
       
       loading.value = true
+      streamingContent.value = ''
+      isStreaming.value = true
+      aiResult.value = null
+      
+      // 创建AbortController用于取消请求
+      abortController.value = new AbortController()
+      
       try {
-        const response = await axios.post(`${API_BASE_URL}/generate-content`, {
-          prompt: `请为${novelForm.value.genre}类型的小说，主题是${novelForm.value.theme}，生成一段内容。`,
-          max_tokens: 500
+        // 使用流式API
+        const response = await fetch(`${API_BASE_URL}/generate-content-stream`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            prompt: `请为${novelForm.value.genre}类型的小说，主题是${novelForm.value.theme}，生成一段内容。`,
+            max_tokens: 500
+          }),
+          signal: abortController.value.signal
         })
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        // 处理SSE格式的流式响应
+        if (response.body) {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let fullContent = '';
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n\n');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const jsonData = line.substring(6); // 去掉 'data: ' 前缀
+                try {
+                  const parsed = JSON.parse(jsonData);
+                  // 检查是否是结束标记
+                  if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content !== undefined) {
+                    const content = parsed.choices[0].delta.content;
+                    if (content !== null && content !== undefined) {
+                      fullContent += content;
+                      streamingContent.value = fullContent;
+                    }
+                  }
+                } catch (e) {
+                  console.error('解析JSON失败:', e);
+                }
+              }
+            }
+          }
+        }
+        
         aiResult.value = {
           title: aiResult.value?.title || `《${novelForm.value.genre}：${novelForm.value.theme}》`,
-          content: response.data.content
+          content: streamingContent.value
         }
         ElMessage.success('内容生成成功')
-      } catch (error) {
-        console.error('生成内容失败:', error)
-        ElMessage.error('内容生成失败')
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('生成内容失败:', error)
+          ElMessage.error('内容生成失败')
+        }
       } finally {
         loading.value = false
+        isStreaming.value = false
       }
     }
     
@@ -139,12 +213,25 @@ export default defineComponent({
         content: ''
       }
       aiResult.value = null
+      streamingContent.value = ''
+      // streamingLines.value = []
+      if (abortController.value) {
+        abortController.value.abort()
+      }
     }
+    
+    onUnmounted(() => {
+      if (abortController.value) {
+        abortController.value.abort()
+      }
+    })
     
     return {
       novelForm,
       aiResult,
       loading,
+      streamingContent,
+      isStreaming,
       generateTitle,
       generateContent,
       clearContent
@@ -176,5 +263,16 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.streaming-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.streaming-text {
+  text-align: left;
 }
 </style>

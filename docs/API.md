@@ -41,7 +41,22 @@ http://localhost:8000/api/ai
 }
 ```
 
-### 3. 生成小说标题
+### 3. 流式生成小说内容
+
+- **URL**: `/generate-content-stream`
+- **方法**: `POST`
+- **描述**: 根据提示词流式生成小说内容（逐字显示）
+- **请求参数**:
+  - `prompt` (string, 必需): 生成内容的提示词
+  - `max_tokens` (integer, 可选, 默认: 500): 最大生成token数
+- **返回示例**:
+```
+这是生成的小说内容的第一部分...
+这是生成的小说内容的第二部分...
+```
+- **注意**: 此接口返回的是流式数据，需要特殊处理以实现逐字显示效果。
+
+### 4. 生成小说标题
 
 - **URL**: `/generate-title`
 - **方法**: `POST`
@@ -56,7 +71,7 @@ http://localhost:8000/api/ai
 }
 ```
 
-### 4. 获取AI建议
+### 5. 获取AI建议
 
 - **URL**: `/suggestions`
 - **方法**: `POST`
@@ -115,3 +130,48 @@ const generateTitle = async (genre, theme) => {
     throw error;
   }
 };
+
+// 流式生成小说内容
+const generateContentStream = async (prompt, maxTokens = 500) => {
+  try {
+    const response = await axios.post('/api/ai/generate-content-stream', {
+      prompt: prompt,
+      max_tokens: maxTokens
+    }, {
+      responseType: 'text'  // 重要：设置响应类型为text以处理流式数据
+    });
+    return response.data;  // 返回流式数据
+  } catch (error) {
+    console.error('流式生成内容失败:', error);
+    throw error;
+  }
+};
+
+// 生成小说内容（使用新API模型）
+const generateContentWithModel = async (prompt, maxTokens = 500) => {
+  try {
+    const response = await axios.post('/api/ai/generate-content', {
+      prompt: prompt,
+      max_tokens: maxTokens
+    });
+    return response.data.content;
+  } catch (error) {
+    console.error('生成内容失败:', error);
+    throw error;
+  }
+};
+
+// 生成小说标题（使用新API模型）
+const generateTitleWithModel = async (genre, theme) => {
+  try {
+    const response = await axios.post('/api/ai/generate-title', {
+      genre: genre,
+      theme: theme
+    });
+    return response.data.title;
+  } catch (error) {
+    console.error('生成标题失败:', error);
+    throw error;
+  }
+};
+```

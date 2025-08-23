@@ -1,6 +1,7 @@
 # co-novel - AI服务
 import os
 from openai import OpenAI
+from typing import Iterator
 
 # 确保环境变量已加载
 from dotenv import load_dotenv
@@ -40,6 +41,32 @@ class AIService:
         except Exception as e:
             print(f"AI生成错误: {e}")
             return "抱歉，AI生成内容时出现错误。"
+    
+    def generate_novel_content_stream(self, prompt: str, max_tokens: int = 500) -> Iterator[str]:
+        """
+        流式生成小说内容
+        
+        Args:
+            prompt: 生成内容的提示词
+            max_tokens: 最大生成token数
+            
+        Yields:
+            生成的小说内容片段
+        """
+        try:
+            response = self.client.completions.create(
+                model=os.getenv("OPENAI_MODEL", "text-davinci-003"),
+                prompt=prompt,
+                max_tokens=max_tokens,
+                temperature=0.7,
+                stream=True  # 启用流式响应
+            )
+            for chunk in response:
+                if chunk.choices[0].text is not None:
+                    yield chunk.choices[0].text
+        except Exception as e:
+            print(f"AI流式生成错误: {e}")
+            yield "抱歉，AI流式生成内容时出现错误。"
     
     def generate_novel_title(self, genre: str, theme: str) -> str:
         """
