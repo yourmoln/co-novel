@@ -9,13 +9,13 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@types/node": "^24.3.0",
-    "axios": "^1.4.0",
+    "@element-plus/icons-vue": "^2.3.2",
     "element-plus": "^2.11.1",
     "vue": "^3.5.19",
     "vue-router": "^4.2.0"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "@types/vue": "^2.0.0",
     "@vitejs/plugin-vue": "^4.2.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
