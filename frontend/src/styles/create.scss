@@ -276,7 +276,7 @@
     
     :deep(.el-form-item__label) {
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--text-primary) !important;
       margin-bottom: 8px;
       transition: color 0.3s ease;
     }
@@ -285,16 +285,34 @@
   :deep(.el-input__wrapper) {
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    
+    &:hover {
+      border-color: var(--primary-color) !important;
+    }
+    
+    &.is-focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2) !important;
+    }
+    
+    .el-input__inner {
+      color: var(--text-primary) !important;
+      background-color: transparent !important;
+    }
   }
   
   :deep(.el-textarea__inner) {
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e4e7ed;
+    border: 1px solid var(--border-color) !important;
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
     
     &:focus {
-      border-color: #409eff;
-      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2);
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2) !important;
     }
   }
 }
@@ -377,7 +395,7 @@
     
     :deep(.el-form-item__label) {
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--text-primary) !important;
       margin-bottom: 8px;
       transition: color 0.3s ease;
     }
@@ -387,8 +405,37 @@
     width: 100%;
     
     :deep(.el-input__wrapper) {
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+      background-color: var(--card-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      
+      &:hover {
+        border-color: var(--primary-color) !important;
+      }
+      
+      &.is-focus {
+        border-color: var(--primary-color) !important;
+      }
+      
+      .el-input__inner {
+        color: var(--text-primary) !important;
+        background-color: transparent !important;
+        
+        &::placeholder {
+          color: var(--text-muted) !important;
+        }
+      }
+    }
+    
+    // 选择框箭头
+    :deep(.el-select__caret) {
+      color: var(--text-muted) !important;
+    }
+    
+    // 选择框占位符文本
+    :deep(.el-select__placeholder) {
+      color: var(--text-muted) !important;
     }
   }
   
@@ -396,6 +443,25 @@
     :deep(.el-input__wrapper) {
       border-radius: 12px;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      background-color: var(--card-bg) !important;
+      border: 1px solid var(--border-color) !important;
+      
+      &:hover {
+        border-color: var(--primary-color) !important;
+      }
+      
+      &.is-focus {
+        border-color: var(--primary-color) !important;
+      }
+      
+      .el-input__inner {
+        color: var(--text-primary) !important;
+        background-color: transparent !important;
+        
+        &::placeholder {
+          color: var(--text-muted) !important;
+        }
+      }
     }
   }
 }
@@ -481,5 +547,100 @@
   .generate-btn {
     width: 100%;
     max-width: 300px;
+  }
+}
+
+// 深色模式下的特定样式修复
+[data-theme="dark"] {
+  .create-page {
+    // 确保所有输入框在深色模式下背景正确
+    .el-input__wrapper {
+      background-color: var(--card-bg) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    .el-input__inner {
+      background-color: transparent !important;
+      color: var(--text-primary) !important;
+      
+      &::placeholder {
+        color: var(--text-muted) !important;
+      }
+    }
+    
+    .el-textarea__inner {
+      background-color: var(--card-bg) !important;
+      color: var(--text-primary) !important;
+      
+      &::placeholder {
+        color: var(--text-muted) !important;
+      }
+    }
+    
+    // 步骤条样式增强
+    .el-steps {
+      .el-step__title {
+        &.is-process {
+          color: var(--primary-color) !important;
+          font-weight: 600 !important;
+        }
+        
+        &.is-finish {
+          color: var(--primary-color) !important;
+        }
+        
+        &.is-wait {
+          color: var(--text-muted) !important;
+        }
+      }
+      
+      .el-step__description {
+        &.is-process {
+          color: var(--text-secondary) !important;
+        }
+      }
+    }
+    
+    // 选择框特定修复
+    .el-select {
+      .el-input__wrapper {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+      }
+      
+      .el-input__inner {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        
+        &::placeholder {
+          color: var(--text-muted) !important;
+        }
+      }
+      
+      .el-select__caret {
+        color: var(--text-muted) !important;
+      }
+    }
+    
+    // 针对类型选择框的特定修复
+    .genre-select {
+      .el-input__wrapper {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+      }
+      
+      .el-input__inner {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+        
+        &::placeholder {
+          color: var(--text-muted) !important;
+        }
+      }
+      
+      .el-select__caret {
+        color: var(--text-muted) !important;
+      }
+    }
   }
 }

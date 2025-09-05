@@ -36,18 +36,26 @@
   :deep(.el-input__wrapper) {
     border-radius: 8px;
     transition: all 0.3s ease;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
     
     &:hover {
-      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.15);
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.15) !important;
+      border-color: var(--primary-color) !important;
+    }
+    
+    &.is-focus {
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2) !important;
+      border-color: var(--primary-color) !important;
     }
     
     .el-input__inner {
-      color: var(--text-primary);
+      color: var(--text-primary) !important;
+      background-color: transparent !important;
       
       &::placeholder {
-        color: var(--text-muted);
+        color: var(--text-muted) !important;
       }
     }
   }
@@ -56,19 +64,48 @@
 .el-select {
   :deep(.el-input__wrapper) {
     border-radius: 8px;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+    
+    &:hover {
+      border-color: var(--primary-color) !important;
+    }
+    
+    &.is-focus {
+      border-color: var(--primary-color) !important;
+    }
+    
+    .el-input__inner {
+      color: var(--text-primary) !important;
+      background-color: transparent !important;
+      
+      &::placeholder {
+        color: var(--text-muted) !important;
+      }
+    }
   }
 }
 
 .el-textarea {
   :deep(.el-textarea__inner) {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: 8px;
+    box-shadow: none !important;
+    
+    &:hover {
+      border-color: var(--primary-color) !important;
+    }
+    
+    &:focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2) !important;
+    }
     
     &::placeholder {
-      color: var(--text-muted);
+      color: var(--text-muted) !important;
     }
   }
 }
@@ -80,6 +117,54 @@
   box-shadow: 0 4px 20px var(--shadow-light) !important;
   
   .el-select-dropdown__item {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+    }
+    
+    &.selected {
+      background-color: var(--primary-color) !important;
+      color: white !important;
+    }
+    
+    &.is-selected {
+      background-color: var(--primary-color) !important;
+      color: white !important;
+    }
+  }
+}
+
+// Select组件特定样式
+.el-select {
+  .el-select__wrapper {
+    background-color: var(--card-bg) !important;
+  }
+  
+  .el-select__placeholder {
+    color: var(--text-muted) !important;
+  }
+  
+  .el-select__selected-item {
+    color: var(--text-primary) !important;
+  }
+}
+
+// 下拉箭头样式
+.el-select .el-select__caret {
+  color: var(--text-muted) !important;
+}
+
+// 确保下拉面板在深色模式下正确显示
+.el-select-dropdown {
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 20px var(--shadow-light) !important;
+  
+  .el-select-dropdown__item {
+    background-color: var(--card-bg) !important;
     color: var(--text-primary) !important;
     
     &:hover {
@@ -96,37 +181,77 @@
 // 步骤条样式
 .el-steps {
   :deep(.el-step__title) {
-    color: var(--text-primary);
+    color: var(--text-secondary) !important;
     transition: color 0.3s ease;
     
     &.is-finish {
-      color: var(--primary-color);
+      color: var(--primary-color) !important;
     }
     
     &.is-process {
-      color: var(--primary-color);
+      color: var(--primary-color) !important;
+      font-weight: 600;
+    }
+    
+    &.is-wait {
+      color: var(--text-muted) !important;
     }
   }
   
   :deep(.el-step__description) {
-    color: var(--text-secondary);
+    color: var(--text-muted) !important;
     transition: color 0.3s ease;
+    
+    &.is-finish {
+      color: var(--text-secondary) !important;
+    }
+    
+    &.is-process {
+      color: var(--text-secondary) !important;
+    }
   }
   
   :deep(.el-step__icon) {
-    border-color: var(--border-color);
-    color: var(--text-muted);
+    border-color: var(--border-color) !important;
+    color: var(--text-muted) !important;
+    background-color: var(--card-bg) !important;
     transition: all 0.3s ease;
     
     &.is-text {
-      background-color: var(--bg-secondary);
-      border-color: var(--border-color);
+      background-color: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-muted) !important;
+    }
+    
+    &.is-finish {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: white !important;
+    }
+    
+    &.is-process {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: white !important;
+    }
+    
+    // 数字文本
+    .el-step__icon-inner {
+      color: inherit !important;
     }
   }
   
   :deep(.el-step__line) {
-    background-color: var(--border-color);
+    background-color: var(--border-color) !important;
     transition: background-color 0.3s ease;
+    
+    &.is-finish {
+      background-color: var(--primary-color) !important;
+    }
+  }
+  
+  :deep(.el-step__line-inner) {
+    background-color: var(--primary-color) !important;
   }
 }
 
@@ -162,4 +287,100 @@
 
 [data-theme="dark"] .el-loading-mask {
   background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+// 深色模式下的额外样式修复
+[data-theme="dark"] {
+  // 确保所有输入框在深色模式下正确显示
+  .el-input__wrapper {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+  }
+  
+  .el-input__inner {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+  }
+  
+  .el-textarea__inner {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+  }
+  
+  // 下拉框选项
+  .el-select-dropdown__item {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+    }
+  }
+  
+  // 确保所有表单标签在深色模式下可见
+  .el-form-item__label {
+    color: var(--text-primary) !important;
+  }
+  
+  // 选择框特定修复
+  .el-select {
+    .el-input {
+      .el-input__wrapper {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+      }
+      
+      .el-input__inner {
+        background-color: transparent !important;
+        color: var(--text-primary) !important;
+      }
+    }
+    
+    // 选择框箭头
+    .el-select__caret {
+      color: var(--text-muted) !important;
+    }
+    
+    // 选择框占位符
+    .el-select__placeholder {
+      color: var(--text-muted) !important;
+    }
+  }
+  
+  // 下拉面板容器
+  .el-popper {
+    background: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+  }
+  
+  .el-select-dropdown {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+  }
+}
+
+// 最高优先级的选择框样式覆盖
+.el-select {
+  .el-input__wrapper {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+  }
+  
+  .el-input__inner {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+// 全局最强覆盖
+[data-theme="dark"] .el-select .el-input__wrapper,
+[data-theme="dark"] .genre-select .el-input__wrapper {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .el-select .el-input__inner,
+[data-theme="dark"] .genre-select .el-input__inner {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
 }
