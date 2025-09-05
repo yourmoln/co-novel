@@ -1,0 +1,222 @@
+// 应用程序布局样式
+.app-container {
+  min-height: 100vh;
+  background: var(--bg-color);
+  transition: background-color 0.3s ease;
+}
+
+// 头部样式
+.header {
+  background: var(--header-bg);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 4px 20px var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: box-shadow 0.3s ease;
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%;
+  }
+  
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .logo-icon {
+      font-size: 2rem;
+      color: #fff;
+    }
+    
+    .app-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(45deg, #fff, #f0f9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .app-subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+  }
+  
+  .nav-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 25px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+      }
+      
+      &.active {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .el-icon {
+        font-size: 1.1rem;
+      }
+    }
+    
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px) scale(1.05);
+      }
+      
+      .el-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// 主内容区域
+.main {
+  padding: 0;
+  min-height: calc(100vh - 180px);
+  background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
+}
+
+// 底部样式
+.footer {
+  background: var(--footer-bg);
+  color: white;
+  padding: 20px;
+  transition: background-color 0.3s ease;
+  
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    
+    .footer-links {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+// 响应式设计 - 头部和底部
+@media (max-width: 768px) {
+  .header {
+    padding: 0 15px;
+    
+    .header-content {
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px 0;
+    }
+    
+    .logo-section {
+      .app-title {
+        font-size: 1.5rem;
+      }
+      
+      .app-subtitle {
+        font-size: 0.8rem;
+      }
+    }
+    
+    .nav-section {
+      gap: 15px;
+      
+      .nav-link {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .footer {
+    padding: 15px;
+    
+    .footer-content {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+      
+      p, .footer-links {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    .logo-section {
+      gap: 8px;
+      
+      .logo-icon {
+        font-size: 1.5rem;
+      }
+      
+      .app-title {
+        font-size: 1.3rem;
+      }
+      
+      .app-subtitle {
+        display: none;
+      }
+    }
+    
+    .nav-section {
+      .nav-link {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        
+        .el-icon {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}

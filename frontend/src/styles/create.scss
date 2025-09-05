@@ -1,0 +1,485 @@
+// 创作页面样式
+.create-page {
+  min-height: calc(100vh - 120px);
+  background: var(--bg-tertiary);
+  padding: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h1 {
+    font-size: 2.5rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+}
+
+.steps-container {
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px var(--shadow-light);
+  transition: all 0.3s ease;
+}
+
+.create-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.step-content {
+  margin-bottom: 20px;
+}
+
+.form-card, .result-card {
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 10px 30px var(--shadow-light);
+  overflow: hidden;
+  background: var(--card-bg);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 15px 40px var(--shadow-medium);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+  
+  .header-icon {
+    margin-right: 10px;
+    color: #409eff;
+  }
+  
+  .header-actions {
+    margin-left: auto;
+  }
+}
+
+.step-info {
+  background: var(--bg-secondary);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 4px solid #409eff;
+  transition: background-color 0.3s ease;
+  
+  p {
+    margin: 5px 0;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+  }
+}
+
+.summary-section {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  
+  h3 {
+    color: var(--primary-color);
+    margin: 0 0 15px 0;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  
+  label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-right: 8px;
+    min-width: 80px;
+    transition: color 0.3s ease;
+  }
+  
+  span {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+}
+
+.hint-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+  font-style: italic;
+  transition: color 0.3s ease;
+}
+
+.novel-info {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h2 {
+    color: var(--text-primary);
+    margin: 0 0 15px 0;
+    font-size: 2rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+}
+
+.novel-meta {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.chapter-selection {
+  background: var(--bg-secondary);
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+  
+  h3 {
+    color: var(--text-primary);
+    margin: 0 0 20px 0;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+}
+
+.chapter-options {
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+}
+
+.generate-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.generate-section {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.generate-btn {
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  }
+}
+
+.result-section {
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+}
+
+.title-display, .outline-display {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #4facfe;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.streaming-container {
+  padding: 20px;
+  
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+}
+
+.streaming-outline, .streaming-content {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #4facfe;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  min-height: 60px;
+}
+
+.streaming-text {
+  margin-bottom: 10px;
+}
+
+.step-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.step-navigation {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.confirm-section {
+  .el-form-item {
+    margin-bottom: 25px;
+    
+    :deep(.el-form-item__label) {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      transition: color 0.3s ease;
+    }
+  }
+  
+  :deep(.el-input__wrapper) {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  :deep(.el-textarea__inner) {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e4e7ed;
+    
+    &:focus {
+      border-color: #409eff;
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.2);
+    }
+  }
+}
+
+.chapter-info {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h2 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    margin: 0;
+    background: var(--header-bg);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: color 0.3s ease;
+  }
+}
+
+// 流式生成样式
+.streaming-container {
+  padding: 20px;
+  
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+  
+  .streaming-content {
+    h3 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #4facfe;
+      padding-bottom: 10px;
+      transition: color 0.3s ease;
+    }
+    
+    .streaming-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.8;
+      font-size: 1rem;
+      color: var(--text-primary);
+      padding: 20px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      border-left: 4px solid #4facfe;
+      min-height: 200px;
+      transition: all 0.3s ease;
+    }
+  }
+  
+  .streaming-outline {
+    position: relative;
+    
+    .streaming-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.8;
+      font-size: 1rem;
+      color: var(--text-primary);
+      padding: 20px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+      min-height: 200px;
+      transition: all 0.3s ease;
+    }
+  }
+}
+
+// 表单样式优化
+.create-form {
+  .form-item {
+    margin-bottom: 25px;
+    
+    :deep(.el-form-item__label) {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      transition: color 0.3s ease;
+    }
+  }
+  
+  .genre-select {
+    width: 100%;
+    
+    :deep(.el-input__wrapper) {
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .theme-input {
+    :deep(.el-input__wrapper) {
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.step-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.step-navigation {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.confirm-section {
+  .el-form-item {
+    margin-bottom: 25px;
+  }
+}
+
+.final-result {
+  .chapter-header h3 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+  
+  .chapter-content {
+    background: var(--bg-secondary);
+    padding: 25px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: var(--text-primary);
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+  }
+}
+
+.final-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .create-page {
+    padding: 15px;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .steps-container {
+    padding: 20px;
+  }
+  
+  .form-card, .result-card {
+    margin-bottom: 15px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .step-actions, .final-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .generate-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}

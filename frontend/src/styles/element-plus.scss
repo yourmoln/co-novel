@@ -1,0 +1,165 @@
+// Element Plus 组件样式覆盖
+.el-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.el-card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px var(--shadow-light);
+  background: var(--card-bg);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 30px var(--shadow-medium);
+  }
+  
+  :deep(.el-card__header) {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  :deep(.el-card__body) {
+    background: var(--card-bg);
+    color: var(--text-primary);
+  }
+}
+
+.el-input {
+  :deep(.el-input__wrapper) {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    
+    &:hover {
+      box-shadow: 0 2px 12px rgba(64, 158, 255, 0.15);
+    }
+    
+    .el-input__inner {
+      color: var(--text-primary);
+      
+      &::placeholder {
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+.el-select {
+  :deep(.el-input__wrapper) {
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+  }
+}
+
+.el-textarea {
+  :deep(.el-textarea__inner) {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+}
+
+// 下拉菜单样式
+.el-popper {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 20px var(--shadow-light) !important;
+  
+  .el-select-dropdown__item {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+    }
+    
+    &.selected {
+      background-color: var(--primary-color) !important;
+      color: white !important;
+    }
+  }
+}
+
+// 步骤条样式
+.el-steps {
+  :deep(.el-step__title) {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+    
+    &.is-finish {
+      color: var(--primary-color);
+    }
+    
+    &.is-process {
+      color: var(--primary-color);
+    }
+  }
+  
+  :deep(.el-step__description) {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+  }
+  
+  :deep(.el-step__icon) {
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    
+    &.is-text {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+  }
+  
+  :deep(.el-step__line) {
+    background-color: var(--border-color);
+    transition: background-color 0.3s ease;
+  }
+}
+
+// 消息提示样式
+.el-message {
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 4px 20px var(--shadow-light) !important;
+}
+
+// 标签样式
+.el-tag {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  
+  &.el-tag--info {
+    background-color: var(--bg-tertiary) !important;
+  }
+  
+  &.el-tag--success {
+    background-color: rgba(103, 194, 58, 0.1) !important;
+    border-color: var(--success-color) !important;
+    color: var(--success-color) !important;
+  }
+}
+
+// 加载指示器样式
+.el-loading-mask {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .el-loading-mask {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}

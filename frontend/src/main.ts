@@ -4,6 +4,8 @@ import router from './router'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
+// 导入全局样式
+import './styles/index.scss'
 
 const app = createApp(App)
 app.use(router)
