@@ -93,10 +93,11 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .home {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--header-bg);
   min-height: calc(100vh - 120px);
   padding: 0;
   overflow-x: hidden;
+  transition: background 0.3s ease;
 }
 
 // 英雄区域
@@ -199,14 +200,16 @@ export default defineComponent({
 // 功能特色区域
 .features-section {
   padding: 80px 20px;
-  background: white;
+  background: var(--bg-color);
+  transition: background-color 0.3s ease;
   
   .section-title {
     text-align: center;
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 3rem;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
   
   .features-row {
@@ -221,10 +224,12 @@ export default defineComponent({
   border-radius: 20px;
   transition: all 0.3s ease;
   height: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px var(--shadow-medium);
   }
   
   .feature-icon {
@@ -253,22 +258,25 @@ export default defineComponent({
   
   h3 {
     font-size: 1.5rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
   
   p {
-    color: #6c757d;
+    color: var(--text-secondary);
     line-height: 1.6;
     font-size: 1rem;
+    transition: color 0.3s ease;
   }
 }
 
 // 快速开始区域
 .quick-start-section {
   padding: 60px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--header-bg);
+  transition: background 0.3s ease;
   
   .quick-start-card {
     max-width: 600px;
@@ -293,16 +301,16 @@ export default defineComponent({
       padding: 16px 32px;
       font-size: 1.1rem;
       border-radius: 50px;
-      background: white;
-      color: #667eea;
+      background: var(--bg-color);
+      color: var(--primary-color);
       border: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 32px var(--shadow-dark);
       transition: all 0.3s ease;
       
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-        background: #f8f9fa;
+        box-shadow: 0 12px 40px var(--shadow-dark);
+        background: var(--bg-secondary);
       }
     }
   }

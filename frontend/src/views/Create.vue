@@ -744,8 +744,9 @@ export default defineComponent({
 <style scoped lang="scss">
 .create-page {
   min-height: calc(100vh - 120px);
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--bg-tertiary);
   padding: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .page-header {
@@ -754,25 +755,28 @@ export default defineComponent({
   
   h1 {
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 10px;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
   
   p {
     font-size: 1.1rem;
-    color: #6c757d;
+    color: var(--text-secondary);
     margin: 0;
+    transition: color 0.3s ease;
   }
 }
 
 .steps-container {
   max-width: 1000px;
   margin: 0 auto 40px auto;
-  background: white;
+  background: var(--card-bg);
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px var(--shadow-light);
+  transition: all 0.3s ease;
 }
 
 .create-container {
@@ -787,11 +791,13 @@ export default defineComponent({
 .form-card, .result-card {
   border-radius: 20px;
   border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px var(--shadow-light);
   overflow: hidden;
+  background: var(--card-bg);
+  transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 40px var(--shadow-medium);
   }
 }
 
@@ -800,7 +806,8 @@ export default defineComponent({
   align-items: center;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
   
   .header-icon {
     margin-right: 10px;
@@ -822,29 +829,33 @@ export default defineComponent({
 }
 
 .step-info {
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 20px;
   border-left: 4px solid #409eff;
+  transition: background-color 0.3s ease;
   
   p {
     margin: 5px 0;
-    color: #2c3e50;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
   }
 }
 
 .summary-section {
-  background: #f0f9ff;
+  background: var(--bg-secondary);
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 25px;
-  border: 1px solid #bae6fd;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
   
   h3 {
-    color: #0369a1;
+    color: var(--primary-color);
     margin: 0 0 15px 0;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 }
 
@@ -860,24 +871,27 @@ export default defineComponent({
   
   label {
     font-weight: 600;
-    color: #374151;
+    color: var(--text-primary);
     margin-right: 8px;
     min-width: 80px;
+    transition: color 0.3s ease;
   }
   
   span {
-    color: #1f2937;
-    background: #e5e7eb;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
     padding: 4px 8px;
     border-radius: 6px;
+    transition: all 0.3s ease;
   }
 }
 
 .hint-text {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-muted);
   margin-top: 5px;
   font-style: italic;
+  transition: color 0.3s ease;
 }
 
 .novel-info {
@@ -885,10 +899,11 @@ export default defineComponent({
   margin-bottom: 30px;
   
   h2 {
-    color: #1f2937;
+    color: var(--text-primary);
     margin: 0 0 15px 0;
     font-size: 2rem;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 }
 
@@ -899,15 +914,17 @@ export default defineComponent({
 }
 
 .chapter-selection {
-  background: #f8fafc;
+  background: var(--bg-secondary);
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 20px;
+  transition: background-color 0.3s ease;
   
   h3 {
-    color: #374151;
+    color: var(--text-primary);
     margin: 0 0 20px 0;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 }
 
@@ -942,14 +959,15 @@ export default defineComponent({
 
 .result-section {
   h3 {
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 15px;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
 }
 
 .title-display, .outline-display {
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   padding: 20px;
   border-radius: 12px;
   border-left: 4px solid #4facfe;
@@ -957,6 +975,8 @@ export default defineComponent({
   line-height: 1.6;
   margin-bottom: 20px;
   white-space: pre-wrap;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .step-actions {
@@ -970,7 +990,8 @@ export default defineComponent({
 .step-navigation {
   margin-top: 30px;
   padding-top: 20px;
-  border-top: 1px solid #e4e7ed;
+  border-top: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .confirm-section {
@@ -979,8 +1000,9 @@ export default defineComponent({
     
     :deep(.el-form-item__label) {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--text-primary);
       margin-bottom: 8px;
+      transition: color 0.3s ease;
     }
   }
   
@@ -1006,13 +1028,14 @@ export default defineComponent({
   margin-bottom: 30px;
   
   h2 {
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 2rem;
     margin: 0;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--header-bg);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    transition: color 0.3s ease;
   }
 }
 
@@ -1020,11 +1043,12 @@ export default defineComponent({
 .streaming-container {
   .streaming-content {
     h3 {
-      color: #2c3e50;
+      color: var(--text-primary);
       font-size: 1.5rem;
       margin-bottom: 20px;
       border-bottom: 2px solid #4facfe;
       padding-bottom: 10px;
+      transition: color 0.3s ease;
     }
     
     .streaming-text {
@@ -1032,12 +1056,13 @@ export default defineComponent({
       word-break: break-word;
       line-height: 1.8;
       font-size: 1rem;
-      color: #2c3e50;
+      color: var(--text-primary);
       padding: 20px;
-      background: #f8f9fa;
+      background: var(--bg-secondary);
       border-radius: 12px;
       border-left: 4px solid #4facfe;
       min-height: 200px;
+      transition: all 0.3s ease;
     }
     
     .cursor-indicator {
@@ -1051,10 +1076,11 @@ export default defineComponent({
   }
   
   h3 {
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 1.3rem;
     margin-bottom: 15px;
     font-weight: 600;
+    transition: color 0.3s ease;
   }
   
   .streaming-outline {
@@ -1065,12 +1091,13 @@ export default defineComponent({
       word-break: break-word;
       line-height: 1.8;
       font-size: 1rem;
-      color: #2c3e50;
+      color: var(--text-primary);
       padding: 20px;
-      background: #f8f9fa;
+      background: var(--bg-secondary);
       border-radius: 12px;
       border-left: 4px solid #667eea;
       min-height: 200px;
+      transition: all 0.3s ease;
     }
     
     .cursor-indicator {
@@ -1092,11 +1119,12 @@ export default defineComponent({
 .final-result {
   .chapter-header {
     h3 {
-      color: #2c3e50;
+      color: var(--text-primary);
       font-size: 1.5rem;
       margin-bottom: 20px;
       border-bottom: 2px solid #4facfe;
       padding-bottom: 10px;
+      transition: color 0.3s ease;
     }
   }
   
@@ -1105,12 +1133,13 @@ export default defineComponent({
     word-break: break-word;
     line-height: 1.8;
     font-size: 1rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     padding: 20px;
-    background: #f8f9fa;
+    background: var(--bg-secondary);
     border-radius: 12px;
     border-left: 4px solid #4facfe;
     margin-bottom: 30px;
+    transition: all 0.3s ease;
   }
 }
 
@@ -1156,8 +1185,9 @@ export default defineComponent({
     
     :deep(.el-form-item__label) {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--text-primary);
       margin-bottom: 8px;
+      transition: color 0.3s ease;
     }
   }
   

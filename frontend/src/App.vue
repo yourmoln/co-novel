@@ -17,6 +17,10 @@
               <el-icon><EditPen /></el-icon>
               创作
             </router-link>
+            <button class="theme-toggle" @click="toggleTheme" :title="isDarkMode ? '切换到浅色模式' : '切换到深色模式'">
+              <el-icon v-if="isDarkMode"><Sunny /></el-icon>
+              <el-icon v-else><Moon /></el-icon>
+            </button>
           </nav>
         </div>
       </el-header>
@@ -39,19 +43,80 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Notebook, House, EditPen } from '@element-plus/icons-vue'
+import { Notebook, House, EditPen, Sunny, Moon } from '@element-plus/icons-vue'
+import { useTheme } from './composables/useTheme'
 
 export default defineComponent({
   name: 'App',
   components: {
     Notebook,
     House,
-    EditPen
+    EditPen,
+    Sunny,
+    Moon
+  },
+  setup() {
+    const { toggleTheme, isDarkMode, initTheme } = useTheme()
+    
+    // 初始化主题
+    initTheme()
+    
+    return {
+      toggleTheme,
+      isDarkMode
+    }
   }
 })
 </script>
 
 <style lang="scss">
+// CSS 变量定义
+:root {
+  // 浅色模式变量
+  --bg-color: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f5f7fa;
+  --text-primary: #2c3e50;
+  --text-secondary: #6c757d;
+  --text-muted: #8e8e93;
+  --border-color: #e4e7ed;
+  --border-light: #f1f1f1;
+  --card-bg: #ffffff;
+  --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --footer-bg: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.12);
+  --shadow-dark: rgba(0, 0, 0, 0.15);
+  --primary-color: #409eff;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
+  --info-color: #909399;
+}
+
+// 深色模式变量
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3a3a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e2e2;
+  --text-muted: #999999;
+  --border-color: #4a4a4a;
+  --border-light: #3a3a3a;
+  --card-bg: #2d2d2d;
+  --header-bg: linear-gradient(135deg, #4a5568 0%, #553c9a 100%);
+  --footer-bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
+  --shadow-dark: rgba(0, 0, 0, 0.5);
+  --primary-color: #409eff;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
+  --info-color: #909399;
+}
+
 // 全局重置
 * {
   margin: 0;
@@ -63,24 +128,28 @@ export default defineComponent({
   font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: var(--text-primary);
   min-height: 100vh;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--bg-color);
+  transition: background-color 0.3s ease;
 }
 
 // 头部样式
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--header-bg);
   color: white;
   padding: 0 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: box-shadow 0.3s ease;
   
   .header-content {
     display: flex;
@@ -120,6 +189,7 @@ export default defineComponent({
   
   .nav-section {
     display: flex;
+    align-items: center;
     gap: 20px;
     
     .nav-link {
@@ -148,6 +218,29 @@ export default defineComponent({
         font-size: 1.1rem;
       }
     }
+    
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px) scale(1.05);
+      }
+      
+      .el-icon {
+        font-size: 1.2rem;
+      }
+    }
   }
 }
 
@@ -155,14 +248,16 @@ export default defineComponent({
 .main {
   padding: 0;
   min-height: calc(100vh - 180px);
-  background: #f8f9fa;
+  background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 // 底部样式
 .footer {
-  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  background: var(--footer-bg);
   color: white;
   padding: 20px;
+  transition: background-color 0.3s ease;
   
   .footer-content {
     display: flex;
@@ -267,16 +362,16 @@ export default defineComponent({
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--border-light);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--border-color);
   border-radius: 4px;
   
   &:hover {
-    background: #a8a8a8;
+    background: var(--text-muted);
   }
 }
 
@@ -294,27 +389,155 @@ export default defineComponent({
 .el-card {
   border-radius: 12px;
   border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  background: var(--card-bg);
+  transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 30px var(--shadow-medium);
+  }
+  
+  :deep(.el-card__header) {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  :deep(.el-card__body) {
+    background: var(--card-bg);
+    color: var(--text-primary);
   }
 }
 
 .el-input {
-  .el-input__wrapper {
+  :deep(.el-input__wrapper) {
     border-radius: 8px;
     transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
     
     &:hover {
       box-shadow: 0 2px 12px rgba(64, 158, 255, 0.15);
+    }
+    
+    .el-input__inner {
+      color: var(--text-primary);
+      
+      &::placeholder {
+        color: var(--text-muted);
+      }
     }
   }
 }
 
 .el-select {
-  .el-input__wrapper {
+  :deep(.el-input__wrapper) {
     border-radius: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
   }
+}
+
+.el-textarea {
+  :deep(.el-textarea__inner) {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+}
+
+// 下拉菜单样式
+.el-popper {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 20px var(--shadow-light) !important;
+  
+  .el-select-dropdown__item {
+    color: var(--text-primary) !important;
+    
+    &:hover {
+      background-color: var(--bg-secondary) !important;
+    }
+    
+    &.selected {
+      background-color: var(--primary-color) !important;
+      color: white !important;
+    }
+  }
+}
+
+// 步骤条样式
+.el-steps {
+  :deep(.el-step__title) {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+    
+    &.is-finish {
+      color: var(--primary-color);
+    }
+    
+    &.is-process {
+      color: var(--primary-color);
+    }
+  }
+  
+  :deep(.el-step__description) {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+  }
+  
+  :deep(.el-step__icon) {
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    
+    &.is-text {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-color);
+    }
+  }
+  
+  :deep(.el-step__line) {
+    background-color: var(--border-color);
+    transition: background-color 0.3s ease;
+  }
+}
+
+// 消息提示样式
+.el-message {
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 4px 20px var(--shadow-light) !important;
+}
+
+// 标签样式
+.el-tag {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  
+  &.el-tag--info {
+    background-color: var(--bg-tertiary) !important;
+  }
+  
+  &.el-tag--success {
+    background-color: rgba(103, 194, 58, 0.1) !important;
+    border-color: var(--success-color) !important;
+    color: var(--success-color) !important;
+  }
+}
+
+// 加载指示器样式
+.el-loading-mask {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .el-loading-mask {
+  background-color: rgba(0, 0, 0, 0.8) !important;
 }
 </style>
