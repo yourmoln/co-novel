@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主题切换测试</title>
+    <style>
+        :root {
+            /* 浅色模式变量 */
+            --bg-color: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --border-color: #e4e7ed;
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            /* 深色模式变量 */
+            --bg-color: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #e2e2e2;
+            --border-color: #4a4a4a;
+            --card-bg: #2d2d2d;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: Arial, sans-serif;
+            transition: all 0.3s ease;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .test-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            padding: 10px 20px;
+            background: var(--text-primary);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>主题切换功能测试</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">切换主题</button>
+    
+    <div class="test-card">
+        <h2>测试卡片 1</h2>
+        <p>这是一个测试卡片，用于验证主题切换功能是否正常工作。</p>
+    </div>
+    
+    <div class="test-card">
+        <h2>测试卡片 2</h2>
+        <p>当您点击切换主题按钮时，页面应该在浅色模式和深色模式之间切换。</p>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const root = document.documentElement;
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', newTheme);
+            localStorage.setItem('test-theme', newTheme);
+        }
+
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('test-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        initTheme();
+    </script>
+</body>
+</html>

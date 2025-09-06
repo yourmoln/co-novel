@@ -19,6 +19,22 @@
 
 ### 环境设置
 
+#### 前端
+
+1. 安装依赖:
+
+```bash
+pnpm install
+```
+
+2. 启动开发服务器:
+
+```bash
+pnpm dev
+```
+
+#### 后端
+
 1. 安装 [uv](https://github.com/astral-sh/uv) 包管理器
 2. 安装依赖:
 
