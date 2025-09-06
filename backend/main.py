@@ -25,7 +25,7 @@ logger = app_logger
 app = FastAPI(
     title="co-novel AI小说助手",
     description="一个用AI辅助写小说的助手 - 优化版本",
-    version="2.0.0",
+    version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
