@@ -3,22 +3,35 @@
     <div class="page-header">
       <h1>小说创作工作台</h1>
       <p>让AI成为您的创作伙伴，开始一段精彩的文学之旅</p>
+      
+      <!-- 已保存章节按钮 -->
+      <div class="saved-chapters-button" v-if="state.currentStep === 0">
+        <el-button 
+          type="info" 
+          @click="showSavedChaptersDialog = true"
+          size="large"
+          plain
+        >
+          <el-icon><FolderOpened /></el-icon>
+          查看已保存章节
+        </el-button>
+      </div>
     </div>
 
-    <!-- 步骤指示器 -->
+      <!-- 步骤指示器 -->
     <div class="steps-container">
-      <el-steps :active="currentStep" finish-status="success" align-center>
+      <el-steps :active="state.currentStep" finish-status="success" align-center>
         <el-step title="基础设置" description="设置类型和主题"></el-step>
         <el-step title="生成标题" description="AI生成小说标题"></el-step>
         <el-step title="创建大纲" description="AI生成章节大纲"></el-step>
         <el-step title="确认信息" description="编辑和确认内容"></el-step>
-        <el-step title="生成第一章" description="开始创作之旅"></el-step>
+        <el-step title="生成章节" description="开始创作之旅"></el-step>
       </el-steps>
     </div>
     
     <div class="create-container">
       <!-- 步骤1: 基础设置 -->
-      <div v-if="currentStep === 0" class="step-content">
+      <div v-if="state.currentStep === 0" class="step-content">
         <el-card class="form-card" shadow="hover">
           <template #header>
             <div class="card-header">
@@ -27,25 +40,26 @@
             </div>
           </template>
           
-          <el-form :model="novelForm" label-position="top" class="create-form">
+          <el-form :model="state.novelForm" label-position="top" class="create-form">
             <el-form-item label="小说类型" class="form-item">
               <el-select 
-                v-model="novelForm.genre" 
+                v-model="state.novelForm.genre" 
                 placeholder="选择您喜欢的类型" 
                 class="genre-select"
                 size="large"
               >
-                <el-option label="🎆 玄幻" value="玄幻"></el-option>
-                <el-option label="🏢 都市" value="都市"></el-option>
-                <el-option label="🚀 科幻" value="科幻"></el-option>
-                <el-option label="⚔️ 武侠" value="武侠"></el-option>
-                <el-option label="💕 言情" value="言情"></el-option>
+                <el-option 
+                  v-for="option in genreOptions" 
+                  :key="option.value"
+                  :label="option.label" 
+                  :value="option.value"
+                ></el-option>
               </el-select>
             </el-form-item>
             
             <el-form-item label="创作主题" class="form-item">
               <el-input 
-                v-model="novelForm.theme" 
+                v-model="state.novelForm.theme" 
                 placeholder="请输入您的小说主题或灵感..."
                 size="large"
                 class="theme-input"
@@ -59,9 +73,9 @@
             <div class="step-actions">
               <el-button 
                 type="primary" 
-                @click="nextStep" 
+                @click="handleNextStep" 
                 size="large"
-                :disabled="!novelForm.genre || !novelForm.theme"
+                :disabled="!canProceedToNext"
               >
                 下一步：生成标题
                 <el-icon><ArrowRight /></el-icon>
@@ -72,7 +86,7 @@
       </div>
 
       <!-- 步骤2: 生成标题 -->
-      <div v-if="currentStep === 1" class="step-content">
+      <div v-if="state.currentStep === 1" class="step-content">
         <el-card class="form-card" shadow="hover">
           <template #header>
             <div class="card-header">
@@ -82,33 +96,33 @@
           </template>
 
           <div class="step-info">
-            <p><strong>类型:</strong> {{ novelForm.genre }}</p>
-            <p><strong>主题:</strong> {{ novelForm.theme }}</p>
+            <p><strong>类型:</strong> {{ state.novelForm.genre }}</p>
+            <p><strong>主题:</strong> {{ state.novelForm.theme }}</p>
           </div>
 
-          <div v-if="!generatedTitle" class="generate-section">
+          <div v-if="!state.generatedTitle" class="generate-section">
             <el-button 
               type="primary" 
               @click="generateTitle" 
-              :loading="loading"
+              :loading="state.loading"
               size="large"
               class="generate-btn"
             >
-              <el-icon v-if="!loading"><MagicStick /></el-icon>
+              <el-icon v-if="!state.loading"><MagicStick /></el-icon>
               生成标题
             </el-button>
           </div>
 
           <div v-else class="result-section">
             <h3>生成的标题：</h3>
-            <div class="title-display">{{ generatedTitle }}</div>
+            <div class="title-display">{{ state.generatedTitle }}</div>
             
             <div class="step-actions">
-              <el-button @click="regenerateTitle" :loading="loading">
+              <el-button @click="regenerateTitle" :loading="state.loading">
                 <el-icon><Refresh /></el-icon>
                 重新生成
               </el-button>
-              <el-button type="primary" @click="nextStep" size="large">
+              <el-button type="primary" @click="handleNextStep" size="large">
                 确认标题，下一步
                 <el-icon><ArrowRight /></el-icon>
               </el-button>
@@ -116,7 +130,7 @@
           </div>
 
           <div class="step-navigation">
-            <el-button @click="prevStep">
+            <el-button @click="handlePrevStep">
               <el-icon><ArrowLeft /></el-icon>
               上一步
             </el-button>
@@ -125,7 +139,7 @@
       </div>
 
       <!-- 步骤3: 创建大纲 -->
-      <div v-if="currentStep === 2" class="step-content">
+      <div v-if="state.currentStep === 2" class="step-content">
         <el-card class="form-card" shadow="hover">
           <template #header>
             <div class="card-header">
@@ -135,42 +149,42 @@
           </template>
 
           <div class="step-info">
-            <p><strong>标题:</strong> {{ generatedTitle }}</p>
-            <p><strong>类型:</strong> {{ novelForm.genre }} | <strong>主题:</strong> {{ novelForm.theme }}</p>
+            <p><strong>标题:</strong> {{ state.generatedTitle }}</p>
+            <p><strong>类型:</strong> {{ state.novelForm.genre }} | <strong>主题:</strong> {{ state.novelForm.theme }}</p>
           </div>
 
-          <div v-if="!generatedOutline" class="generate-section">
+          <div v-if="!state.generatedOutline" class="generate-section">
             <el-button 
               type="primary" 
               @click="generateOutline" 
-              :loading="loading"
+              :loading="state.loading"
               size="large"
               class="generate-btn"
             >
-              <el-icon v-if="!loading"><Document /></el-icon>
+              <el-icon v-if="!state.loading"><Document /></el-icon>
               流式生成大纲
             </el-button>
           </div>
 
           <!-- 流式生成大纲 -->
-          <div v-if="isStreamingOutline" class="streaming-container">
+          <div v-if="state.isStreamingOutline" class="streaming-container">
             <h3>正在生成大纲：</h3>
             <div class="streaming-outline">
-              <div class="streaming-text">{{ streamingOutlineContent }}</div>
+              {{ formatOutlineText(state.streamingOutlineContent) }}
               <div class="cursor-indicator"></div>
             </div>
           </div>
 
-          <div v-else-if="generatedOutline" class="result-section">
+          <div v-else-if="state.generatedOutline" class="result-section">
             <h3>生成的大纲：</h3>
-            <div class="outline-display">{{ generatedOutline }}</div>
+            <div class="outline-display">{{ formatOutlineText(state.generatedOutline) }}</div>
             
             <div class="step-actions">
-              <el-button @click="regenerateOutline" :loading="loading">
+              <el-button @click="regenerateOutline" :loading="state.loading">
                 <el-icon><Refresh /></el-icon>
                 重新生成
               </el-button>
-              <el-button type="primary" @click="nextStep" size="large">
+              <el-button type="primary" @click="handleNextStep" size="large">
                 确认大纲，下一步
                 <el-icon><ArrowRight /></el-icon>
               </el-button>
@@ -178,7 +192,7 @@
           </div>
 
           <div class="step-navigation">
-            <el-button @click="prevStep">
+            <el-button @click="handlePrevStep">
               <el-icon><ArrowLeft /></el-icon>
               上一步
             </el-button>
@@ -187,7 +201,7 @@
       </div>
 
       <!-- 步骤4: 确认信息 -->
-      <div v-if="currentStep === 3" class="step-content">
+      <div v-if="state.currentStep === 3" class="step-content">
         <el-card class="form-card" shadow="hover">
           <template #header>
             <div class="card-header">
@@ -202,11 +216,11 @@
             <div class="info-grid">
               <div class="info-item">
                 <label>小说类型：</label>
-                <span>{{ novelForm.genre }}</span>
+                <span>{{ state.novelForm.genre }}</span>
               </div>
               <div class="info-item">
                 <label>创作主题：</label>
-                <span>{{ novelForm.theme }}</span>
+                <span>{{ state.novelForm.theme }}</span>
               </div>
             </div>
           </div>
@@ -215,27 +229,28 @@
             <el-form label-position="top">
               <el-form-item label="小说标题">
                 <el-input 
-                  v-model="editableTitle" 
+                  v-model="state.editableTitle" 
                   size="large"
                   placeholder="您可以编辑标题"
                 />
-                <div class="hint-text">原标题：{{ generatedTitle }}</div>
+                <div class="hint-text">原标题：{{ state.generatedTitle }}</div>
               </el-form-item>
               
               <el-form-item label="小说大纲">
                 <el-input 
-                  v-model="editableOutline" 
+                  v-model="state.editableOutline" 
                   type="textarea"
                   :rows="8"
                   placeholder="您可以编辑大纲"
                   resize="vertical"
+                  class="outline-textarea"
                 />
                 <div class="hint-text">可以在此处修改AI生成的大纲内容</div>
               </el-form-item>
             </el-form>
             
             <div class="step-actions">
-              <el-button type="primary" @click="confirmAndNext" size="large">
+              <el-button type="primary" @click="handleConfirmAndNext" size="large">
                 确认信息，进入章节生成
                 <el-icon><ArrowRight /></el-icon>
               </el-button>
@@ -243,7 +258,7 @@
           </div>
 
           <div class="step-navigation">
-            <el-button @click="prevStep">
+            <el-button @click="handlePrevStep">
               <el-icon><ArrowLeft /></el-icon>
               上一步
             </el-button>
@@ -252,13 +267,13 @@
       </div>
 
       <!-- 步骤5: 章节生成 -->
-      <div v-if="currentStep === 4" class="step-content">
+      <div v-if="state.currentStep === 4" class="step-content">
         <el-card class="result-card" shadow="hover">
           <template #header>
             <div class="card-header">
               <el-icon class="header-icon"><DocumentAdd /></el-icon>
               <span>章节生成</span>
-              <div class="header-actions" v-if="isStreaming">
+              <div class="header-actions" v-if="state.isStreaming">
                 <el-tag type="success" effect="plain">
                   <el-icon class="spinning"><Loading /></el-icon>
                   生成中...
@@ -269,22 +284,22 @@
 
           <!-- 小说信息展示 -->
           <div class="novel-info">
-            <h2>{{ finalTitle }}</h2>
+            <h2>{{ state.finalTitle }}</h2>
             <div class="novel-meta">
-              <el-tag>{{ novelForm.genre }}</el-tag>
-              <el-tag type="info">{{ novelForm.theme }}</el-tag>
+              <el-tag>{{ state.novelForm.genre }}</el-tag>
+              <el-tag type="info">{{ state.novelForm.theme }}</el-tag>
             </div>
           </div>
 
           <!-- 章节选择区域 -->
-          <div v-if="!chapterContent && !isStreaming" class="chapter-selection">
+          <div v-if="!state.chapterContent && !state.isStreaming" class="chapter-selection">
             <h3>选择要生成的章节</h3>
             <div class="chapter-options">
-              <el-form :model="chapterForm" label-position="top">
+              <el-form :model="state.chapterForm" label-position="top">
                 <el-row :gutter="20">
                   <el-col :span="12">
                     <el-form-item label="章节序号">
-                      <el-select v-model="chapterForm.number" size="large" placeholder="选择章节">
+                      <el-select v-model="state.chapterForm.number" size="large" placeholder="选择章节" @change="handleChapterNumberChange">
                         <el-option v-for="i in 20" :key="i" :label="`第${i}章`" :value="i" />
                       </el-select>
                     </el-form-item>
@@ -292,7 +307,7 @@
                   <el-col :span="12">
                     <el-form-item label="章节标题（可选）">
                       <el-input 
-                        v-model="chapterForm.customTitle" 
+                        v-model="state.chapterForm.customTitle" 
                         size="large"
                         placeholder="自定义章节标题"
                       />
@@ -301,37 +316,74 @@
                 </el-row>
               </el-form>
               
+              <!-- 章节状态提示 -->
+              <div v-if="currentChapterStatus" class="chapter-status-info">
+                <el-alert 
+                  :title="currentChapterStatus.message" 
+                  :type="currentChapterStatus.type"
+                  :closable="false"
+                  show-icon
+                />
+              </div>
+              
               <div class="generate-actions">
-                <el-button 
-                  type="primary" 
-                  @click="generateChapter" 
-                  size="large"
-                  class="generate-btn"
-                  :disabled="!chapterForm.number"
-                >
-                  <el-icon><DocumentAdd /></el-icon>
-                  生成第{{ chapterForm.number }}章
-                </el-button>
+                <!-- 已存在章节的按钮 -->
+                <template v-if="currentChapterStatus?.exists">
+                  <el-button 
+                    type="primary"
+                    @click="viewExistingChapter" 
+                    size="large"
+                    class="action-btn"
+                  >
+                    <el-icon><View /></el-icon>
+                    查看已生成结果
+                  </el-button>
+                  <el-button 
+                    type="warning"
+                    @click="regenerateExistingChapter" 
+                    size="large"
+                    class="action-btn"
+                    :loading="state.loading"
+                  >
+                    <el-icon><Refresh /></el-icon>
+                    重新生成第{{ state.chapterForm.number }}章
+                  </el-button>
+                </template>
+                
+                <!-- 未存在章节的按钮 -->
+                <template v-else>
+                  <el-button 
+                    type="primary" 
+                    @click="generateChapter" 
+                    size="large"
+                    class="generate-btn"
+                    :disabled="!state.chapterForm.number"
+                    :loading="state.loading"
+                  >
+                    <el-icon><DocumentAdd /></el-icon>
+                    生成第{{ state.chapterForm.number }}章
+                  </el-button>
+                </template>
               </div>
             </div>
           </div>
 
           <!-- 流式生成内容 -->
-          <div v-if="isStreaming" class="streaming-container">
+          <div v-if="state.isStreaming" class="streaming-container">
             <div class="streaming-content">
-              <h3>{{ currentChapterTitle }}</h3>
-              <div class="streaming-text">{{ streamingContent }}</div>
+              <h3>{{ state.currentChapterTitle }}</h3>
+              {{ state.streamingContent }}
               <div class="cursor-indicator"></div>
             </div>
           </div>
 
           <!-- 最终结果 -->
-          <div v-else-if="chapterContent" class="final-result">
+          <div v-else-if="state.chapterContent" class="final-result">
             <div class="chapter-header">
-              <h3>{{ currentChapterTitle }}</h3>
+              <h3>{{ state.currentChapterTitle }}</h3>
             </div>
             <div class="chapter-content">
-              {{ chapterContent }}
+              {{ state.chapterContent }}
             </div>
             
             <div class="final-actions">
@@ -339,9 +391,13 @@
                 <el-icon><DocumentAdd /></el-icon>
                 生成其他章节
               </el-button>
-              <el-button type="success" size="large">
+              <el-button @click="handleSaveChapter" type="success" size="large" :loading="savingChapter">
                 <el-icon><Check /></el-icon>
-                保存章节
+                {{ savingChapter ? '保存中...' : '保存章节' }}
+              </el-button>
+              <el-button @click="showSavedChaptersDialog = true" type="info" size="large">
+                <el-icon><FolderOpened /></el-icon>
+                查看已保存章节
               </el-button>
               <el-button @click="startOver">
                 <el-icon><RefreshLeft /></el-icon>
@@ -350,8 +406,8 @@
             </div>
           </div>
 
-          <div class="step-navigation" v-if="!isStreaming">
-            <el-button @click="prevStep">
+          <div class="step-navigation" v-if="!state.isStreaming">
+            <el-button @click="handlePrevStep">
               <el-icon><ArrowLeft /></el-icon>
               上一步
             </el-button>
@@ -359,12 +415,91 @@
         </el-card>
       </div>
     </div>
+    
+    <!-- 已保存章节对话框 -->
+    <el-dialog 
+      v-model="showSavedChaptersDialog" 
+      title="已保存的章节"
+      width="80%"
+      :before-close="closeSavedChaptersDialog"
+    >
+      <div v-loading="loadingChapters" class="saved-chapters-container">
+        <div v-if="savedChapters.length === 0" class="empty-state">
+          <el-empty description="暂无已保存的章节">
+            <el-button type="primary" @click="closeSavedChaptersDialog">开始创作</el-button>
+          </el-empty>
+        </div>
+        
+        <div v-else class="chapters-grid">
+          <el-card 
+            v-for="chapter in savedChapters" 
+            :key="chapter.chapter_id"
+            class="chapter-card"
+            shadow="hover"
+          >
+            <div class="chapter-info">
+              <h4>{{ chapter.title }}</h4>
+              <div class="chapter-meta">
+                <p class="novel-title">小说：{{ chapter.novel_title }}</p>
+                <p class="chapter-details">
+                  <el-tag size="small">第{{ chapter.chapter_number }}章</el-tag>
+                  <el-tag size="small" type="info">{{ chapter.genre }}</el-tag>
+                  <span class="word-count">{{ chapter.word_count }}字</span>
+                  <span class="create-time">{{ formatDate(chapter.created_at) }}</span>
+                </p>
+                <p class="theme">主题：{{ chapter.theme }}</p>
+              </div>
+            </div>
+            
+            <div class="chapter-actions">
+              <div class="position-editor">
+                <el-input-number 
+                  v-model="chapter.editPosition" 
+                  :min="1" 
+                  :max="99" 
+                  size="small"
+                  controls-position="right"
+                  @change="handlePositionChange(chapter)"
+                  style="width: 80px; margin-right: 8px;"
+                />
+                <el-button 
+                  size="small" 
+                  @click="confirmPositionChange(chapter)"
+                  :disabled="chapter.editPosition === chapter.chapter_number"
+                >
+                  修改
+                </el-button>
+              </div>
+              <el-button 
+                type="primary" 
+                @click="handleOpenChapter(chapter.chapter_id)"
+                :loading="openingChapter === chapter.chapter_id"
+                size="small"
+              >
+                <el-icon><View /></el-icon>
+                打开章节
+              </el-button>
+            </div>
+          </el-card>
+        </div>
+      </div>
+      
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="loadSavedChapters" :loading="loadingChapters">
+            <el-icon><Refresh /></el-icon>
+            刷新列表
+          </el-button>
+          <el-button @click="closeSavedChaptersDialog">关闭</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onUnmounted, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+import { defineComponent, onMounted, onUnmounted, ref, reactive } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Edit, 
   Star, 
@@ -377,8 +512,12 @@ import {
   ArrowLeft,
   Refresh,
   EditPen,
-  Check
+  Check,
+  FolderOpened,
+  View
 } from '@element-plus/icons-vue'
+import { useCreationState } from '@/composables/useCreationState'
+import type { NovelGenre } from '@/types'
 
 export default defineComponent({
   name: 'Create',
@@ -394,338 +533,16 @@ export default defineComponent({
     ArrowLeft,
     Refresh,
     EditPen,
-    Check
+    Check,
+    FolderOpened,
+    View
   },
   setup() {
-    // 基础表单数据
-    const novelForm = ref({
-      genre: '',
-      theme: ''
-    })
-    
-    // 章节表单数据
-    const chapterForm = ref({
-      number: 1,
-      customTitle: ''
-    })
-    
-    // 步骤控制
-    const currentStep = ref(0)
-    
-    // 生成的内容
-    const generatedTitle = ref('')
-    const generatedOutline = ref('')
-    const streamingOutlineContent = ref('')
-    const editableTitle = ref('')
-    const editableOutline = ref('')
-    const finalTitle = ref('')
-    const finalOutline = ref('')
-    
-    // 章节内容
-    const chapterContent = ref('')
-    const streamingContent = ref('')
-    const currentChapterTitle = ref('')
-    
-    // 状态控制
-    const loading = ref(false)
-    const isStreaming = ref(false)
-    const isStreamingOutline = ref(false)
-    const abortController = ref<AbortController | null>(null)
-    
-    // 配置API基础URL
-    const API_BASE_URL = 'http://localhost:8000/api/ai'
-    
-    // 步骤导航
-    const nextStep = () => {
-      if (currentStep.value < 4) {
-        currentStep.value++
-        // 进入确认信息步骤时，初始化编辑内容
-        if (currentStep.value === 3) {
-          initEditableContent()
-        }
-      }
-    }
-    
-    const prevStep = () => {
-      if (currentStep.value > 0) {
-        currentStep.value--
-      }
-    }
-    
-    // 生成标题
-    const generateTitle = async () => {
-      loading.value = true
-      try {
-        const response = await fetch(`${API_BASE_URL}/generate-title`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            genre: novelForm.value.genre,
-            theme: novelForm.value.theme
-          })
-        })
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
-        const data = await response.json()
-        generatedTitle.value = data.title
-        ElMessage.success('标题生成成功')
-      } catch (error) {
-        console.error('生成标题失败:', error)
-        ElMessage.error('标题生成失败')
-      } finally {
-        loading.value = false
-      }
-    }
-    
-    // 重新生成标题
-    const regenerateTitle = async () => {
-      generatedTitle.value = ''
-      await generateTitle()
-    }
-    
-    // 生成大纲
-    const generateOutline = async () => {
-      loading.value = true
-      streamingOutlineContent.value = ''
-      isStreamingOutline.value = true
-      
-      abortController.value = new AbortController()
-      
-      try {
-        const response = await fetch(`${API_BASE_URL}/generate-outline-stream`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            genre: novelForm.value.genre,
-            theme: novelForm.value.theme,
-            title: generatedTitle.value
-          }),
-          signal: abortController.value.signal
-        })
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
-        // 处理SSE格式的流式响应
-        if (response.body) {
-          const reader = response.body.getReader()
-          const decoder = new TextDecoder()
-          let fullOutline = ''
-          
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-            
-            const chunk = decoder.decode(value)
-            const lines = chunk.split('\n\n')
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const jsonData = line.substring(6)
-                try {
-                  const parsed = JSON.parse(jsonData)
-                  if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content !== undefined) {
-                    const content = parsed.choices[0].delta.content
-                    if (content !== null && content !== undefined) {
-                      fullOutline += content
-                      streamingOutlineContent.value = fullOutline
-                    }
-                  }
-                } catch (e) {
-                  console.error('解析JSON失败:', e)
-                }
-              }
-            }
-          }
-        }
-        
-        generatedOutline.value = streamingOutlineContent.value
-        ElMessage.success('大纲生成成功')
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('生成大纲失败:', error)
-          ElMessage.error('大纲生成失败')
-        }
-      } finally {
-        loading.value = false
-        isStreamingOutline.value = false
-      }
-    }
-    
-    // 重新生成大纲
-    const regenerateOutline = async () => {
-      generatedOutline.value = ''
-      streamingOutlineContent.value = ''
-      await generateOutline()
-    }
-    
-    // 确认并进入下一步
-    const confirmAndNext = () => {
-      editableTitle.value = editableTitle.value || generatedTitle.value
-      editableOutline.value = editableOutline.value || generatedOutline.value
-      
-      finalTitle.value = editableTitle.value
-      finalOutline.value = editableOutline.value
-      
-      nextStep()
-    }
-    
-    // 生成章节
-    const generateChapter = async () => {
-      loading.value = true
-      streamingContent.value = ''
-      isStreaming.value = true
-      
-      // 设置当前章节标题
-      const chapterNumber = chapterForm.value.number
-      currentChapterTitle.value = chapterForm.value.customTitle || `第${chapterNumber}章`
-      
-      abortController.value = new AbortController()
-      
-      try {
-        const response = await fetch(`${API_BASE_URL}/generate-chapter-stream`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            title: finalTitle.value,
-            outline: finalOutline.value,
-            chapter_number: chapterNumber,
-            custom_title: chapterForm.value.customTitle
-          }),
-          signal: abortController.value.signal
-        })
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
-        // 处理SSE格式的流式响应
-        if (response.body) {
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder();
-          let fullContent = '';
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n\n');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const jsonData = line.substring(6);
-                try {
-                  const parsed = JSON.parse(jsonData);
-                  if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content !== undefined) {
-                    const content = parsed.choices[0].delta.content;
-                    if (content !== null && content !== undefined) {
-                      fullContent += content;
-                      streamingContent.value = fullContent;
-                    }
-                  }
-                } catch (e) {
-                  console.error('解析JSON失败:', e);
-                }
-              }
-            }
-          }
-        }
-        
-        chapterContent.value = streamingContent.value
-        ElMessage.success(`第${chapterNumber}章生成成功`)
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('生成章节失败:', error)
-          ElMessage.error('章节生成失败')
-        }
-      } finally {
-        loading.value = false
-        isStreaming.value = false
-      }
-    }
-    
-    // 生成其他章节
-    const generateAnotherChapter = () => {
-      chapterContent.value = ''
-      streamingContent.value = ''
-      chapterForm.value.number = Math.min(chapterForm.value.number + 1, 20)
-      chapterForm.value.customTitle = ''
-    }
-    
-    // 重新开始
-    const startOver = () => {
-      // 重置所有状态
-      currentStep.value = 0
-      novelForm.value = { genre: '', theme: '' }
-      chapterForm.value = { number: 1, customTitle: '' }
-      generatedTitle.value = ''
-      generatedOutline.value = ''
-      streamingOutlineContent.value = ''
-      editableTitle.value = ''
-      editableOutline.value = ''
-      finalTitle.value = ''
-      finalOutline.value = ''
-      chapterContent.value = ''
-      streamingContent.value = ''
-      currentChapterTitle.value = ''
-      
-      if (abortController.value) {
-        abortController.value.abort()
-      }
-    }
-    
-    // 初始化编辑内容
-    const initEditableContent = () => {
-      editableTitle.value = generatedTitle.value
-      editableOutline.value = generatedOutline.value
-    }
-    
-    // 监听步骤变化，初始化编辑内容
-    const handleStepChange = () => {
-      if (currentStep.value === 3) {
-        initEditableContent()
-      }
-    }
-    
-    onUnmounted(() => {
-      if (abortController.value) {
-        abortController.value.abort()
-      }
-    })
-    
-    return {
-      // 数据
-      novelForm,
-      chapterForm,
-      currentStep,
-      generatedTitle,
-      generatedOutline,
-      streamingOutlineContent,
-      editableTitle,
-      editableOutline,
-      finalTitle,
-      finalOutline,
-      chapterContent,
-      streamingContent,
-      currentChapterTitle,
-      
-      // 状态
-      loading,
-      isStreaming,
-      isStreamingOutline,
-      
-      // 方法
+    // 使用状态管理组合函数
+    const {
+      state,
+      canProceedToNext,
+      currentStepName,
       nextStep,
       prevStep,
       generateTitle,
@@ -735,7 +552,320 @@ export default defineComponent({
       confirmAndNext,
       generateChapter,
       generateAnotherChapter,
-      startOver
+      startOver,
+      saveProgress,
+      loadProgress,
+      cleanup,
+      saveChapterToServer,
+      getSavedChapters,
+      openSavedChapter,
+      checkExistingChapter,
+      updateChapterPosition
+    } = useCreationState()
+    
+    // 已保存章节相关状态
+    const showSavedChaptersDialog = ref(false)
+    const savedChapters = ref<any[]>([])
+    const loadingChapters = ref(false)
+    const savingChapter = ref(false)
+    const openingChapter = ref('')
+    const currentChapterStatus = ref<any>(null)
+    const updatingPosition = ref('')
+    
+    // 组件生命周期
+    onMounted(async () => {
+      // 尝试加载之前保存的进度
+      loadProgress()
+      
+      // 如果已经在第5步，检查当前章节状态
+      if (state.currentStep === 4) {
+        await checkCurrentChapterStatus()
+      }
+    })
+    
+    onUnmounted(() => {
+      // 清理资源
+      cleanup()
+    })
+    
+    // 小说类型选项
+    const genreOptions = [
+      { label: '🎆 玄幻', value: '玄幻' },
+      { label: '🏢 都市', value: '都市' },
+      { label: '🚀 科幻', value: '科幻' },
+      { label: '⚔️ 武侠', value: '武侠' },
+      { label: '💕 言情', value: '言情' }
+    ]
+    
+    // 处理步骤切换
+    const handleNextStep = () => {
+      if (canProceedToNext.value) {
+        nextStep()
+        // 自动保存进度
+        saveProgress()
+      } else {
+        ElMessage.warning('请完成当前步骤的必填项')
+      }
+    }
+    
+    // 处理上一步
+    const handlePrevStep = () => {
+      prevStep()
+      saveProgress()
+    }
+    
+    // 处理确认并下一步
+    const handleConfirmAndNext = () => {
+      confirmAndNext()
+      saveProgress()
+    }
+    
+    // 格式化大纲文本
+    const formatOutlineText = (text: string) => {
+      if (!text) return ''
+      
+      // 先清理和规范化文本
+      let formatted = text
+        .replace(/\r\n/g, '\n') // 统一换行符
+        .replace(/\r/g, '\n')   // 统一换行符
+        .trim()
+      
+      // 确保每章之间有适当的换行
+      formatted = formatted
+        .replace(/第([一二三四五六七八九十\d]+)章/g, '\n\n第$1章')
+        .replace(/^[\n\s]+/, '') // 移除开头的换行和空格
+        .replace(/\n{3,}/g, '\n\n') // 将多个换行统一为两个
+        .replace(/[ \t]+/g, ' ') // 规范化空格
+      
+      return formatted
+    }
+    
+    // 保存章节到服务器
+    const handleSaveChapter = async () => {
+      savingChapter.value = true
+      try {
+        const success = await saveChapterToServer()
+        if (success) {
+          // 保存成功后刷新已保存章节列表
+          await loadSavedChapters()
+        }
+      } finally {
+        savingChapter.value = false
+      }
+    }
+    
+    // 加载已保存的章节列表
+    const loadSavedChapters = async () => {
+      loadingChapters.value = true
+      try {
+        const chapters = await getSavedChapters()
+        // 为每个章节添加编辑位置属性
+        savedChapters.value = chapters.map((ch: any) => ({
+          ...ch,
+          editPosition: ch.chapter_number
+        }))
+      } finally {
+        loadingChapters.value = false
+      }
+    }
+    
+    // 检查当前选中章节的状态
+    const checkCurrentChapterStatus = async () => {
+      if (!state.chapterForm.number || !state.finalTitle) {
+        currentChapterStatus.value = null
+        return
+      }
+      
+      try {
+        const existingChapter = await checkExistingChapter(state.chapterForm.number, state.finalTitle)
+        
+        if (existingChapter) {
+          currentChapterStatus.value = {
+            exists: true,
+            type: 'success',
+            message: `第${state.chapterForm.number}章已存在，可以查看或重新生成`,
+            chapter: existingChapter
+          }
+        } else {
+          currentChapterStatus.value = {
+            exists: false,
+            type: 'info',
+            message: `第${state.chapterForm.number}章尚未生成`,
+            chapter: null
+          }
+        }
+      } catch (error) {
+        console.error('检查章节状态时出错:', error)
+        currentChapterStatus.value = null
+      }
+    }
+    
+    // 处理章节序号变化
+    const handleChapterNumberChange = () => {
+      checkCurrentChapterStatus()
+    }
+    
+    // 查看已存在的章节
+    const viewExistingChapter = async () => {
+      if (currentChapterStatus.value?.chapter) {
+        const success = await openSavedChapter(currentChapterStatus.value.chapter.chapter_id)
+        if (success) {
+          // 成功加载后自动刷新状态
+          await checkCurrentChapterStatus()
+        }
+      }
+    }
+    
+    // 重新生成已存在的章节
+    const regenerateExistingChapter = async () => {
+      try {
+        const confirm = await ElMessageBox.confirm(
+          `确定要重新生成第${state.chapterForm.number}章吗？这将覆盖现有内容。`,
+          '重新生成章节',
+          {
+            confirmButtonText: '确定重新生成',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
+        
+        if (confirm) {
+          // 清空当前章节内容
+          state.chapterContent = ''
+          state.streamingContent = ''
+          // 开始生成
+          await generateChapter()
+        }
+      } catch {
+        // 用户取消
+      }
+    }
+    
+    // 打开已保存的章节
+    const handleOpenChapter = async (chapterId: string) => {
+      openingChapter.value = chapterId
+      try {
+        const success = await openSavedChapter(chapterId)
+        if (success) {
+          showSavedChaptersDialog.value = false
+        }
+      } finally {
+        openingChapter.value = ''
+      }
+    }
+    
+    // 关闭对话框
+    const closeSavedChaptersDialog = () => {
+      showSavedChaptersDialog.value = false
+    }
+    
+    // 处理章节位置变化
+    const handlePositionChange = (chapter: any) => {
+      // 即时更新编辑值，但不立即提交
+      console.log(`章节 ${chapter.title} 的位置将从第${chapter.chapter_number}章改为第${chapter.editPosition}章`)
+    }
+    
+    // 确认位置修改
+    const confirmPositionChange = async (chapter: any) => {
+      if (chapter.editPosition === chapter.chapter_number) {
+        ElMessage.info('位置没有变化')
+        return
+      }
+      
+      try {
+        const confirm = await ElMessageBox.confirm(
+          `确定要将《${chapter.title}》从第${chapter.chapter_number}章改为第${chapter.editPosition}章吗？`,
+          '修改章节位置',
+          {
+            confirmButtonText: '确定修改',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
+        
+        if (confirm) {
+          updatingPosition.value = chapter.chapter_id
+          const success = await updateChapterPosition(chapter.chapter_id, chapter.editPosition)
+          
+          if (success) {
+            // 更新本地数据
+            chapter.chapter_number = chapter.editPosition
+            // 重新加载列表以确保数据一致性
+            await loadSavedChapters()
+          } else {
+            // 失败时恢复原值
+            chapter.editPosition = chapter.chapter_number
+          }
+        } else {
+          // 用户取消时恢复原值
+          chapter.editPosition = chapter.chapter_number
+        }
+      } catch (error) {
+        // 取消或错误时恢复原值
+        chapter.editPosition = chapter.chapter_number
+      } finally {
+        updatingPosition.value = ''
+      }
+    }
+    
+    // 格式化日期
+    const formatDate = (dateString: string) => {
+      try {
+        const date = new Date(dateString)
+        return date.toLocaleDateString('zh-CN', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      } catch {
+        return dateString
+      }
+    }
+    return {
+      // 状态
+      state,
+      
+      // 计算属性
+      canProceedToNext,
+      currentStepName,
+      
+      // 选项
+      genreOptions,
+      
+      // 方法
+      handleNextStep,
+      handlePrevStep,
+      generateTitle,
+      regenerateTitle,
+      generateOutline,
+      regenerateOutline,
+      handleConfirmAndNext,
+      generateChapter,
+      generateAnotherChapter,
+      startOver,
+      formatOutlineText,
+      
+      // 新增的章节管理功能
+      showSavedChaptersDialog,
+      savedChapters,
+      loadingChapters,
+      savingChapter,
+      openingChapter,
+      currentChapterStatus,
+      updatingPosition,
+      handleSaveChapter,
+      loadSavedChapters,
+      handleOpenChapter,
+      closeSavedChaptersDialog,
+      formatDate,
+      handleChapterNumberChange,
+      checkCurrentChapterStatus,
+      viewExistingChapter,
+      regenerateExistingChapter,
+      handlePositionChange,
+      confirmPositionChange
     }
   }
 })

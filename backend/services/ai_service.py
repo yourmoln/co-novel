@@ -1,12 +1,25 @@
 # co-novel - AI服务
+# co-novel - AI服务
 import os
 from openai import OpenAI
-from typing import Iterator
+from typing import Iterator, Optional, List
 import random
+import time
+from datetime import datetime, timedelta
 
 # 确保环境变量已加载
 from dotenv import load_dotenv
 load_dotenv()
+
+# 处理循环导入问题
+try:
+    from models.novel import AIGenerationCache, NovelGenre
+    from services.data_service import data_manager
+except ImportError:
+    print("Warning: Some modules not available for import, using fallback mode")
+    AIGenerationCache = None
+    NovelGenre = None
+    data_manager = None
 
 # 初始化OpenAI客户端
 try:
@@ -23,6 +36,64 @@ class AIService:
     
     def __init__(self):
         self.client = client
+        self.model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+    
+    def _get_cached_content(self, content_type: str, **kwargs) -> Optional[str]:
+        """
+        获取缓存内容
+        
+        Args:
+            content_type: 内容类型
+            **kwargs: 缓存参数
+            
+        Returns:
+            缓存的内容，如果没有缓存则返回None
+        """
+        if data_manager is None:
+            return None
+            
+        try:
+            # 使用AIGenerationCache生成缓存键
+            if AIGenerationCache is not None:
+                cache_key = AIGenerationCache.generate_cache_key(content_type, **kwargs)
+                cache = data_manager.get_cache(cache_key)
+                if cache:
+                    return cache.generated_content
+        except Exception as e:
+            print(f"获取缓存失败: {e}")
+        
+        return None
+    
+    def _save_to_cache(self, content_type: str, content: str, **kwargs) -> bool:
+        """
+        保存内容到缓存
+        
+        Args:
+            content_type: 内容类型
+            content: 生成的内容
+            **kwargs: 缓存参数
+            
+        Returns:
+            是否保存成功
+        """
+        if data_manager is None or AIGenerationCache is None:
+            return False
+            
+        try:
+            # 生成缓存键
+            cache_key = AIGenerationCache.generate_cache_key(content_type, **kwargs)
+            
+            # 保存到缓存
+            data_manager.save_cache(
+                cache_key=cache_key,
+                content_type=content_type,
+                content=content,
+                **kwargs
+            )
+            return True
+        except Exception as e:
+            print(f"保存缓存失败: {e}")
+            return False
     
     def generate_novel_content(self, prompt: str, max_tokens: int = 500) -> str:
         """
@@ -297,7 +368,7 @@ class AIService:
                 yield char
                 time.sleep(0.01)  # 模拟流式效果
     
-    def generate_chapter_content(self, title: str, outline: str, chapter_number: int = 1) -> str:
+    def generate_chapter_content(self, title: str, outline: str, chapter_number: int = 1, custom_title: Optional[str] = None) -> str:
         """
         根据大纲生成指定章节的内容
         
@@ -305,11 +376,25 @@ class AIService:
             title: 小说标题
             outline: 小说大纲
             chapter_number: 章节号
+            custom_title: 自定义章节标题
             
         Returns:
             生成的章节内容
         """
-        prompt = f"""请根据以下信息写第{chapter_number}章的完整内容：
+        # 检查缓存
+        cache_params = {
+            "title": title,
+            "outline": outline[:200],  # 使用大纲前200字符作为缓存键的一部分
+            "chapter_number": chapter_number,
+            "custom_title": custom_title
+        }
+        cached_content = self._get_cached_content("chapter", **cache_params)
+        if cached_content:
+            return cached_content
+        
+        chapter_title = custom_title or f"第{chapter_number}章"
+        
+        prompt = f"""请根据以下信息写{chapter_title}的完整内容：
 
 小说标题：{title}
 
@@ -317,16 +402,22 @@ class AIService:
 {outline}
 
 要求：
-1. 写出第{chapter_number}章的完整内容，约1000-1500字
+1. 写出{chapter_title}的完整内容，约1000-1500字
 2. 内容要生动有趣，有对话和场景描写
 3. 严格按照大纲中第{chapter_number}章的情节发展
 4. 文笔流畅，符合现代小说的写作风格
 5. 如果是第一章，要有引人入胜的开头
 
 请直接输出章节内容，不需要额外的说明："""
-        return self.generate_novel_content(prompt, 1200)
+        
+        result = self.generate_novel_content(prompt, 1200)
+        
+        # 保存到缓存
+        self._save_to_cache("chapter", result, **cache_params)
+        
+        return result
     
-    def generate_chapter_content_stream(self, title: str, outline: str, chapter_number: int = 1) -> Iterator[str]:
+    def generate_chapter_content_stream(self, title: str, outline: str, chapter_number: int = 1, custom_title: Optional[str] = None) -> Iterator[str]:
         """
         流式生成章节内容
         
@@ -334,11 +425,14 @@ class AIService:
             title: 小说标题
             outline: 小说大纲
             chapter_number: 章节号
+            custom_title: 自定义章节标题
             
         Yields:
             生成的章节内容片段
         """
-        prompt = f"""请根据以下信息写第{chapter_number}章的完整内容：
+        chapter_title = custom_title or f"第{chapter_number}章"
+        
+        prompt = f"""请根据以下信息写{chapter_title}的完整内容：
 
 小说标题：{title}
 
@@ -346,7 +440,7 @@ class AIService:
 {outline}
 
 要求：
-1. 写出第{chapter_number}章的完整内容，约1000-1500字
+1. 写出{chapter_title}的完整内容，约1000-1500字
 2. 内容要生动有趣，有对话和场景描写
 3. 严格按照大纲中第{chapter_number}章的情节发展
 4. 文笔流畅，符合现代小说的写作风格
@@ -354,29 +448,41 @@ class AIService:
 
 请直接输出章节内容，不需要额外的说明："""
         
-        if self.client is None:
-            yield "抱歉，AI服务暂时不可用，请检查配置。"
-            return
-            
-        try:
-            # 使用Chat API的流式模式
-            response = self.client.chat.completions.create(
-                model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo"),
-                messages=[
-                    {"role": "system", "content": "你是一个擅长创作小说的AI助手。请根据用户的要求生成高质量的小说内容。"},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=1200,
-                temperature=0.7,
-                stream=True
-            )
-            for chunk in response:
-                if chunk.choices[0].delta.content is not None:
-                    yield chunk.choices[0].delta.content
-        except Exception as e:
-            print(f"AI流式生成章节内容错误: {e}")
-            yield "抱歉，AI流式生成章节内容时出现错误。"
+        # 使用流式生成内容方法
+        full_content = ""
+        for chunk in self.generate_novel_content_stream(prompt, 1200):
+            full_content += chunk
+            yield chunk
+        
+        # 保存到缓存（可选）
+        if full_content.strip():
+            cache_params = {
+                "title": title,
+                "outline": outline[:200],
+                "chapter_number": chapter_number,
+                "custom_title": custom_title
+            }
+            self._save_to_cache("chapter_stream", full_content, **cache_params)
 
+    def generate_multiple_titles(self, genre: str, theme: str, count: int = 3) -> List[str]:
+        """
+        生成多个小说标题
+        
+        Args:
+            genre: 小说类型
+            theme: 小说主题
+            count: 生成数量
+            
+        Returns:
+            标题列表
+        """
+        titles = []
+        for _ in range(count):
+            title = self.generate_novel_title(genre, theme)
+            if title not in titles:  # 避免重复
+                titles.append(title)
+        return titles
+    
     def get_ai_suggestions(self, current_content: str, suggestion_type: str) -> str:
         """
         获取AI建议
